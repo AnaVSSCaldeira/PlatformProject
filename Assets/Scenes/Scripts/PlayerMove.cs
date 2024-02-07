@@ -1,0 +1,166 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+using UnityEngine.SceneManagement;
+
+public class PlayerMove : MonoBehaviour
+{
+    [Header("Player atributes")]
+    public float speed;
+    public float jumpForce;
+    public int life;
+    public int strawberry = 0;
+    public GameObject Player;
+
+    [Header("Components")]
+    public Rigidbody2D rig;
+    public Animator anim;
+    public SpriteRenderer sprite;
+
+    [Header("UI")]
+    public TextMeshProUGUI strawberryText;
+    public TextMeshProUGUI lifeText;
+    public GameObject gameOver;
+
+    private Vector2 direction;
+    public bool canJump = true;
+    private bool recovery;
+
+    public static PlayerMove playerInstance;
+
+    private void Awake()
+    {
+        // Garantir que apenas uma instância de RestartManager exista
+        if (playerInstance == null)
+        {
+            playerInstance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
+    void Start()
+    {
+        lifeText.text = life.ToString();
+        gameOver.SetActive(false);
+        Time.timeScale = 1;
+        playerInstance = this;
+
+        //DontDestroyOnLoad(gameObject);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        direction = new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));
+
+        Jump();
+        PlayAnimations();
+    }
+
+    void FixedUpdate()
+    {
+        Movement();     
+    }
+    // movement
+    void Movement()
+    {
+        rig.velocity = new Vector2(direction.x*speed, rig.velocity.y);
+    }
+    // jump
+    void Jump()
+    {
+        if(Input.GetKeyDown("w") && canJump == true)
+        {
+            rig.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+            anim.SetInteger("transition",2);
+            canJump = false;
+        }
+    }
+    // collision
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if(other.gameObject.layer == 6)
+        {
+            canJump = true;
+        }
+    }
+    // death
+    void Death()
+    {
+        if(life <= 0)
+        {
+            gameOver.SetActive(true);
+            Time.timeScale = 0;
+        }
+    }
+
+    // damage
+    public void Hit()
+    {
+        if(recovery == false)
+        {
+            StartCoroutine(Flick());
+        }
+    }
+
+    IEnumerator Flick()
+    {
+        recovery = true;
+        life -= 1;
+        Death();
+        lifeText.text = life.ToString();
+        for (int i = 0; i < 2; i++) 
+        {
+            sprite.color = new Color(1,1,1,0);
+            yield return new WaitForSeconds(0.2f);
+            sprite.color = new Color(1,1,1,1);
+            yield return new WaitForSeconds(0.2f);
+        }
+        recovery = false;
+    }
+
+    // animations
+    void PlayAnimations()
+    {
+        if(direction.x > 0 && canJump == true)
+        {
+            anim.SetInteger("transition",1);
+            transform.eulerAngles = new Vector2(0,0);
+        }
+        else if(direction.x < 0 && canJump == true)
+        {
+            anim.SetInteger("transition",1);
+            transform.eulerAngles = new Vector2(0,180);
+        }
+        else if(canJump == true)
+        {
+            anim.SetInteger("transition",0);
+        }
+    }
+
+    public void IncreaseScore()
+    {
+        strawberry += 1;
+        strawberryText.text = strawberry.ToString();
+        FinalPoint.finalPointInstance.currentStrawberry += 1;
+    }
+
+    public void RestartGame()
+    {
+        Scene scene = SceneManager.GetActiveScene();
+
+        gameOver.SetActive(false);
+        Time.timeScale = 1;
+        life = 5;
+        lifeText.text = life.ToString();
+        strawberry = scene.buildIndex == 1 ? 0 : (strawberry - FinalPoint.finalPointInstance.currentStrawberry);
+        strawberryText.text = strawberry.ToString();
+        FinalPoint.finalPointInstance.currentStrawberry = 0;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+}
