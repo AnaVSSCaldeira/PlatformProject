@@ -2472,6 +2472,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6677863995103826610, guid: e672d95f2bc0e6a40ba99b2073f230af, type: 3}
+      propertyPath: m_Size.x
+      value: 0.8366642
+      objectReference: {fileID: 0}
+    - target: {fileID: 6677863995103826610, guid: e672d95f2bc0e6a40ba99b2073f230af, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.010050774
+      objectReference: {fileID: 0}
     - target: {fileID: 6677863995103826615, guid: e672d95f2bc0e6a40ba99b2073f230af, type: 3}
       propertyPath: m_Name
       value: Spike (10)
@@ -4634,6 +4642,14 @@ PrefabInstance:
     - target: {fileID: 6677863995103826609, guid: e672d95f2bc0e6a40ba99b2073f230af, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6677863995103826610, guid: e672d95f2bc0e6a40ba99b2073f230af, type: 3}
+      propertyPath: m_Size.x
+      value: 0.8710582
+      objectReference: {fileID: 0}
+    - target: {fileID: 6677863995103826610, guid: e672d95f2bc0e6a40ba99b2073f230af, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.06447089
       objectReference: {fileID: 0}
     - target: {fileID: 6677863995103826615, guid: e672d95f2bc0e6a40ba99b2073f230af, type: 3}
       propertyPath: m_Name
