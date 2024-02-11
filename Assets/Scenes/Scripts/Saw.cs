@@ -68,6 +68,15 @@ public class Saw : MonoBehaviour
         transform.position = Vector2.MoveTowards(transform.position, new Vector2(x, y), speed * Time.deltaTime);
     }
 
+    void OnTriggerEnter2D(Collider2D other)
+    {
+
+        if (other.CompareTag("Player"))
+        {
+            other.GetComponent<PlayerMove>().Hit();
+        }
+    }
+
     private void OnDrawGizmos()
     {
 
@@ -99,14 +108,5 @@ public class Saw : MonoBehaviour
                         new Vector3(offsetTransformNegX, offsetTransformTopPoint, 0));
         Gizmos.DrawLine(new Vector3(offsetTransformPosX, offsetTransformBottomPoint, 0),
                         new Vector3(offsetTransformPosX, offsetTransformTopPoint, 0));
-    }
-
-    void OnTriggerEnter2D(Collider2D other)
-    {
-
-        if (other.CompareTag("Player"))
-        {
-            other.GetComponent<PlayerMove>().Hit();
-        }
     }
 }

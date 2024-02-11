@@ -10,6 +10,7 @@ public class PlayerMove : MonoBehaviour
     public float speed;
     public float jumpForce;
     public int life;
+    [SerializeField] private int maxLife = 10;
     public int strawberry = 0;
     public GameObject Player;
 
@@ -21,17 +22,21 @@ public class PlayerMove : MonoBehaviour
     [Header("UI")]
     public TextMeshProUGUI strawberryText;
     public TextMeshProUGUI lifeText;
+    public TextMeshProUGUI levelNumberText;
+    public int level;
     public GameObject gameOver;
 
-    private Vector2 direction;
+    [Header("Extras")]
+    [SerializeField] private Vector2 direction;
     public bool canJump = true;
     private bool recovery;
-
     public static PlayerMove playerInstance;
+    public bool stopCoroutine;
+    [SerializeField] private ParticleSystem fireParticle;
+
 
     private void Awake()
     {
-        // Garantir que apenas uma instância de RestartManager exista
         if (playerInstance == null)
         {
             playerInstance = this;
@@ -46,20 +51,32 @@ public class PlayerMove : MonoBehaviour
     void Start()
     {
         lifeText.text = life.ToString();
+        levelNumberText.text = level.ToString();
         gameOver.SetActive(false);
         Time.timeScale = 1;
         playerInstance = this;
+        fireParticle.enableEmission = false;
 
         //DontDestroyOnLoad(gameObject);
     }
 
-    // Update is called once per frame
     void Update()
     {
         direction = new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));
 
         Jump();
         PlayAnimations();
+
+        if (rig != null && fireParticle != null)
+        {
+            Vector2 playerVelocity = rig.velocity;
+
+            // Aplicar a velocidade à partícula
+            ParticleSystem.VelocityOverLifetimeModule velocityModule = fireParticle.velocityOverLifetime;
+            velocityModule.xMultiplier = playerVelocity.x > 0 ? playerVelocity.x * -1 : playerVelocity.x;
+            velocityModule.yMultiplier = playerVelocity.y;
+
+        }
     }
 
     void FixedUpdate()
@@ -94,8 +111,10 @@ public class PlayerMove : MonoBehaviour
     {
         if(life <= 0)
         {
+            //StopCoroutine(coroutine);
             gameOver.SetActive(true);
             Time.timeScale = 0;
+            stopCoroutine = true;
         }
     }
 
@@ -114,14 +133,59 @@ public class PlayerMove : MonoBehaviour
         life -= 1;
         Death();
         lifeText.text = life.ToString();
+
         for (int i = 0; i < 2; i++) 
         {
-            sprite.color = new Color(1,1,1,0);
-            yield return new WaitForSeconds(0.2f);
-            sprite.color = new Color(1,1,1,1);
-            yield return new WaitForSeconds(0.2f);
+
+            if (stopCoroutine == false)
+            {
+                sprite.color = new Color(1, 1, 1, 0);
+                yield return new WaitForSeconds(0.2f);
+                sprite.color = new Color(1, 1, 1, 1);
+                yield return new WaitForSeconds(0.2f);
+            }
+            else
+            {
+                stopCoroutine = false;
+                break;
+            }
         }
         recovery = false;
+    }
+
+    //fire damage
+    public void FireHit()
+    {
+        if (recovery == false)
+        {
+            StartCoroutine(FireFlick());
+        }
+    }
+
+    IEnumerator FireFlick()
+    {
+        recovery = true;
+        fireParticle.enableEmission = true;
+        for (int i = 0; i < 5; i++)
+        {
+            life -= 1;
+            Death();
+            lifeText.text = life.ToString();
+            if (stopCoroutine == false)
+            {
+                sprite.color = new Color(1.0f, 0.64f, 0.0f, 1);
+                yield return new WaitForSeconds(0.2f);
+                sprite.color = new Color(1, 1, 1, 1);
+                yield return new WaitForSeconds(0.2f);
+            }
+            else
+            {
+                stopCoroutine = false;
+                break;
+            }
+        }
+        recovery = false;
+        fireParticle.enableEmission = false;
     }
 
     // animations
@@ -152,11 +216,11 @@ public class PlayerMove : MonoBehaviour
 
     public void RestartGame()
     {
+        //StopAllCoroutines();
         Scene scene = SceneManager.GetActiveScene();
-
         gameOver.SetActive(false);
         Time.timeScale = 1;
-        life = 5;
+        life = maxLife;
         lifeText.text = life.ToString();
         strawberry = scene.buildIndex == 1 ? 0 : (strawberry - FinalPoint.finalPointInstance.currentStrawberry);
         strawberryText.text = strawberry.ToString();
