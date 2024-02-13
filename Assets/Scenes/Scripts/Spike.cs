@@ -9,7 +9,7 @@ public class Spike : MonoBehaviour
 
         if(other.CompareTag("Player"))
         {
-            other.GetComponent<PlayerMove>().Hit();
+            other.GetComponent<PlayerMove>().Hit(false);
         }    
     }
 }

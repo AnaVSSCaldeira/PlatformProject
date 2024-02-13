@@ -73,7 +73,7 @@ public class Saw : MonoBehaviour
 
         if (other.CompareTag("Player"))
         {
-            other.GetComponent<PlayerMove>().Hit();
+            other.GetComponent<PlayerMove>().Hit(false);
         }
     }
 

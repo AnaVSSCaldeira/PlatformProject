@@ -119,8 +119,12 @@ public class PlayerMove : MonoBehaviour
     }
 
     // damage
-    public void Hit()
+    public void Hit(bool permadeath)
     {
+        if (permadeath)
+        {
+            life = life - life;
+        }
         if(recovery == false)
         {
             StartCoroutine(Flick());
