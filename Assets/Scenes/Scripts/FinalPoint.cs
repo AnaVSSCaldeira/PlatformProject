@@ -17,7 +17,7 @@ public class FinalPoint : MonoBehaviour
     {
         if(other.CompareTag("Player"))
         {
-            if(SceneManager.GetActiveScene().buildIndex < 10)
+            if(SceneManager.GetActiveScene().buildIndex < 5)
             {
                 currentStrawberry = 0;
                 playerMove.stopCoroutine = playerMove.stopCoroutine == false ? playerMove.stopCoroutine = true : playerMove.stopCoroutine;
@@ -25,28 +25,32 @@ public class FinalPoint : MonoBehaviour
                 playerMove.levelNumberText.text = (playerMove.level).ToString();
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
             }
+            else
+            {
+                
+            }
         }    
     }
 
     void Update()
     {
-        if (Input.GetKeyDown("e"))
-        {
-            if (SceneManager.GetActiveScene().buildIndex < 10)
-            {
-                playerMove.level += 1;
-                playerMove.levelNumberText.text = (playerMove.level).ToString();
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-            }
-        }
-        if (Input.GetKeyDown("q"))
-        {
-            if (SceneManager.GetActiveScene().buildIndex > 1)
-            {
-                playerMove.level -= 1;
-                playerMove.levelNumberText.text = (playerMove.level).ToString();
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + -1);
-            }
-        }
+        //if (Input.GetKeyDown("e"))
+        //{
+        //    if (SceneManager.GetActiveScene().buildIndex < 5)
+        //    {
+        //        playerMove.level += 1;
+        //        playerMove.levelNumberText.text = (playerMove.level).ToString();
+        //        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        //    }
+        //}
+        //if (Input.GetKeyDown("q"))
+        //{
+        //    if (SceneManager.GetActiveScene().buildIndex > 1)
+        //    {
+        //        playerMove.level -= 1;
+        //        playerMove.levelNumberText.text = (playerMove.level).ToString();
+        //        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + -1);
+        //    }
+        //}
     }
 }
